@@ -21,7 +21,7 @@ struct Command {
         struct SubCommand sub_commands[MAX_SUB_COMMANDS];
         int num_sub_commands;
 
-        //HW 4 fields
+        //HW fields
         char *stdin_redirect;
         char *stdout_redirect;
         int background;
@@ -38,7 +38,7 @@ void ResetValues(struct Command *command)
 
 }
 
-//HOMEWORK 2 MATERIAL
+//CATEGORY 2 MATERIAL
 
 void ReadArgs(char *in, char **argv, int size) {
     char *token = strtok(in, " \n");
@@ -78,7 +78,7 @@ int getSize(char **argv)
     return i; 
 }
 
-//HOMEWORK 3 MATERIAL
+//CATEGORY 3 MATERIAL
 
 void ReadCommand(char *line, struct Command *command) {
     char *token = strtok(line, "|");
@@ -115,7 +115,7 @@ void ReadCommand(char *line, struct Command *command) {
 
 
 
-//Modified to meet HW4 requirments
+//Modified to meet Category 4 requirments
 void PrintCommand(struct Command *command) {
     int i = 0;
     for(i = 0; i < command->num_sub_commands; i++) {
@@ -124,7 +124,7 @@ void PrintCommand(struct Command *command) {
     }
 
     printf("\n");
-    //Homework 4 printing material
+    
     printf("Redirect stdin: %s\n", command->stdin_redirect);
     printf("Redirect stdout: %s\n", command->stdout_redirect);
 
@@ -134,10 +134,10 @@ void PrintCommand(struct Command *command) {
     return;
 }
 
-//HOMEWORK 4 MATERIAL
+//CATEGORY 4 MATERIAL
 
 void ReadRedirectsAndBackground(struct Command *command) //change so that to checks all subcommands 
-{                                                       //REMOVE REDIRECT & BACKGROUND SYMBOLS AFTER USE
+{                                                      
     ResetValues(command); //testing to make sure values are set to \0 and 0 
 
     char **lastCommand; 
@@ -158,19 +158,19 @@ void ReadRedirectsAndBackground(struct Command *command) //change so that to che
             if(strcmp(command->sub_commands[i].argv[k], ">") == 0) //output redirect
             {
                 command->stdout_redirect = command->sub_commands[i].argv[k+1];
-                command->sub_commands[i].argv[k] = NULL; //REMOVE
+                command->sub_commands[i].argv[k] = NULL; 
                 k++; 
             } 
             else if(strcmp(command->sub_commands[i].argv[k], "<") == 0) //input redirect
             {
                 command->stdin_redirect = command->sub_commands[i].argv[k+1];
-                command->sub_commands[i].argv[k] = NULL; //REMOVE
+                command->sub_commands[i].argv[k] = NULL; 
                 k++;
             }
             else if(strcmp(command->sub_commands[i].argv[k], "&") == 0)
             {
                 command->background = 1;
-                command->sub_commands[i].argv[k] = NULL; //REMOVE
+                command->sub_commands[i].argv[k] = NULL;
                 k++;
             }
             else
@@ -194,7 +194,7 @@ void CommandNoPipe(struct Command *command)
     }
     else if(ret == 0) //child
     {
-        if(command->stdin_redirect != "\0") //try using NULL instead
+        if(command->stdin_redirect != "\0") // NULL instead
         {
             int fd = open(command->stdin_redirect, O_RDONLY, 0);
             if(fd < 0)
@@ -204,7 +204,7 @@ void CommandNoPipe(struct Command *command)
              }
 
 
-            dup2(fd, 0); // Make sure to use dup2 in order to pick fd 0
+            dup2(fd, 0); // use dup2 in order to pick fd 0
             close(fd);
         }
         if(command->stdout_redirect != "\0")
@@ -241,7 +241,7 @@ void CommandNoPipe(struct Command *command)
 }
 
 //Make sure entire set of commands are redirected properly based on seperation with pipes
-void CommandPipe(struct Command *command, int start) //See pipe HW
+void CommandPipe(struct Command *command, int start) //See pipe
 {
     int fds[2];
 
@@ -263,7 +263,7 @@ void CommandPipe(struct Command *command, int start) //See pipe HW
         dup(fds[1]);
         close(fds[1]);
 
-        if(command->stdin_redirect != "\0") //Make sure to dup specific fd to a fd. USE dup2
+        if(command->stdin_redirect != "\0") //dup specific fd to a fd through dup2
 		{
 			int fd = open(command->stdin_redirect, O_RDONLY, 0);
 			if(fd < 0)
@@ -294,7 +294,7 @@ void CommandPipe(struct Command *command, int start) //See pipe HW
         {perror("ERROR: child 2 fork failed");}
         else if(child2 == 0) 
         {
-            close(fds[1]); //opposite of child 1
+            close(fds[1]); //inverse of child 1
             close(0);
             dup(fds[0]);
             close(fds[0]);
@@ -345,7 +345,7 @@ void CommandPipe(struct Command *command, int start) //See pipe HW
     }
 }
 
-void CheckCommand(struct Command *command) // checks to see which method to use 
+void CheckCommand(struct Command *command) // command handler utilized to determine which function is more appropriate
 {
     if((command->num_sub_commands - 1) > 0)
     {
